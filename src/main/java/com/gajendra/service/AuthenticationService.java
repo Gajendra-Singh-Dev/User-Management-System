@@ -78,7 +78,7 @@ public class AuthenticationService {
         );
 
         // 8. Default role
-        user.setRole(Role.USER);
+        user.setRole(Role.STUDENT);
 
         // 9. Active user
         user.setActive(true);

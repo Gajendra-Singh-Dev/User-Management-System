@@ -1,7 +1,7 @@
 package com.gajendra.security;
 
-
 import java.io.IOException;
+import java.util.List;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -39,100 +39,148 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         // ==========================================
-        // 1. Authorization Header read karo
+        // GET AUTHORIZATION HEADER
         // ==========================================
 
         String authHeader =
                 request.getHeader("Authorization");
 
-        // Agar Authorization header nahi hai
-        // ya Bearer se start nahi ho raha
-        // to request ko aage bhej do
-
-        if (authHeader == null
-                || !authHeader.startsWith("Bearer ")) {
+        // Token nahi hai
+        if (authHeader == null ||
+            !authHeader.startsWith("Bearer ")) {
 
             filterChain.doFilter(request, response);
             return;
         }
 
         // ==========================================
-        // 2. "Bearer " ke baad JWT token nikalo
+        // EXTRACT TOKEN
         // ==========================================
 
         String token =
-                authHeader.substring(7);
+                authHeader.substring(7).trim();
+
+        if (token.isEmpty()) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         try {
 
             // ==========================================
-            // 3. JWT se email nikalo
+            // TOKEN SE EMAIL NIKALO
             // ==========================================
 
             String email =
                     jwtService.extractUsername(token);
 
+            if (email == null || email.isBlank()) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
             // ==========================================
-            // 4. Database se user find karo
+            // DATABASE USER FIND
             // ==========================================
 
             User user =
-                    userRepository.findByEmail(email)
-                            .orElse(null);
+                    userRepository
+                    .findByEmail(email)
+                    .orElse(null);
+
+            if (user == null) {
+                filterChain.doFilter(request, response);
+                return;
+            }
 
             // ==========================================
-            // 5. User mila aur authentication nahi hai
+            // CHECK ACTIVE
             // ==========================================
 
-            if (user != null
-                    && SecurityContextHolder
-                            .getContext()
-                            .getAuthentication() == null) {
+            if (Boolean.FALSE.equals(user.getActive())) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
+            // ==========================================
+            // AUTHENTICATION ALREADY SET?
+            // ==========================================
+
+            if (SecurityContextHolder
+                    .getContext()
+                    .getAuthentication() == null) {
 
                 // ==========================================
-                // 6. JWT valid hai ya nahi
+                // VALIDATE TOKEN
                 // ==========================================
 
                 if (jwtService.isTokenValid(token, user)) {
 
+                    String role =
+                            user.getRole().name();
+
+                    // IMPORTANT:
+                    // Spring Security role format:
+                    // ROLE_ADMIN
+                    // ROLE_STAFF
+                    // ROLE_STUDENT
+
                     SimpleGrantedAuthority authority =
                             new SimpleGrantedAuthority(
-                                    "ROLE_" +
-                                    user.getRole().name()
-                            );
-
-                    UsernamePasswordAuthenticationToken
-                            authentication =
-                            new UsernamePasswordAuthenticationToken(
-                                    user,
-                                    null,
-                                    java.util.List.of(authority)
+                                "ROLE_" + role
                             );
 
                     // ==========================================
-                    // 7. SecurityContext me user set karo
+                    // CREATE AUTHENTICATION
+                    // ==========================================
+
+                    UsernamePasswordAuthenticationToken authentication =
+                            new UsernamePasswordAuthenticationToken(
+                                    user,
+                                    null,
+                                    List.of(authority)
+                            );
+
+                    // ==========================================
+                    // SET SECURITY CONTEXT
                     // ==========================================
 
                     SecurityContextHolder
                             .getContext()
                             .setAuthentication(authentication);
+
+                    System.out.println(
+                            "================================="
+                    );
+
+                    System.out.println(
+                            "JWT Authentication SUCCESS"
+                    );
+
+                    System.out.println(
+                            "User: " + user.getEmail()
+                    );
+
+                    System.out.println(
+                            "Role: " + role
+                    );
+
+                    System.out.println(
+                            "================================="
+                    );
                 }
             }
 
         } catch (Exception e) {
 
-            // Invalid / expired JWT
-            // authentication set nahi hogi
+            SecurityContextHolder
+                    .clearContext();
 
             System.out.println(
-                    "JWT validation failed: "
-                            + e.getMessage()
+                "JWT validation failed: "
+                + e.getMessage()
             );
         }
-
-        // ==========================================
-        // 8. Request ko next filter/controller par bhejo
-        // ==========================================
 
         filterChain.doFilter(request, response);
     }

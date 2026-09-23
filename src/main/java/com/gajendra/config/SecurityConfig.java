@@ -15,69 +15,97 @@ import com.gajendra.security.JwtAuthenticationFilter;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final SecurityExceptionHandler securityExceptionHandler;
 
     public SecurityConfig(
-            JwtAuthenticationFilter jwtAuthenticationFilter) {
+            JwtAuthenticationFilter jwtAuthenticationFilter,
+            SecurityExceptionHandler securityExceptionHandler) {
 
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.securityExceptionHandler = securityExceptionHandler;
     }
-
-    // ==========================================
-    // Password Encoder
-    // ==========================================
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-
         return new BCryptPasswordEncoder();
     }
-
-    // ==========================================
-    // Security Filter Chain
-    // ==========================================
 
     @Bean
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http) throws Exception {
 
         http
-
-            // CSRF disable because we are using REST API
             .csrf(csrf -> csrf.disable())
 
-            // JWT is stateless
             .sessionManagement(session ->
-                    session.sessionCreationPolicy(
-                            SessionCreationPolicy.STATELESS
-                    )
+                session.sessionCreationPolicy(
+                    SessionCreationPolicy.STATELESS
+                )
             )
 
-            // Authorization rules
+            // ==========================================
+            // 401 / 403 HANDLING
+            // ==========================================
+
+            .exceptionHandling(exception -> exception
+
+                .authenticationEntryPoint(
+                    securityExceptionHandler
+                )
+
+                .accessDeniedHandler(
+                    securityExceptionHandler
+                )
+            )
+
+            // ==========================================
+            // AUTHORIZATION
+            // ==========================================
+
             .authorizeHttpRequests(auth -> auth
 
-                    // Registration is public
-                    .requestMatchers(
-                            "/api/auth/register"
-                    ).permitAll()
+                // PUBLIC
+                .requestMatchers(
+                    "/api/auth/register",
+                    "/api/auth/login"
+                ).permitAll()
 
-                    // Login is public
-                    .requestMatchers(
-                            "/api/auth/login"
-                    ).permitAll()
+                // LOGGED-IN USER
+                .requestMatchers("/api/users/me")
+                .hasAnyRole(
+                    "ADMIN",
+                    "STAFF",
+                    "STUDENT"
+                )
 
-                    // Error page should also be accessible
-                    .requestMatchers(
-                            "/error"
-                    ).permitAll()
+                // ADMIN ONLY
+                .requestMatchers("/api/users/**")
+                .hasRole("ADMIN")
 
-                    // All other APIs require JWT
-                    .anyRequest().authenticated()
+                // ADMIN + STAFF
+                .requestMatchers("/api/enquiries/**")
+                .hasAnyRole("ADMIN", "STAFF")
+
+                .requestMatchers("/api/courses/**")
+                .hasAnyRole("ADMIN", "STAFF")
+
+                .requestMatchers("/api/batches/**")
+                .hasAnyRole("ADMIN", "STAFF")
+
+                .requestMatchers("/error")
+                .permitAll()
+
+                .anyRequest()
+                .authenticated()
             )
 
-            // JWT Authentication Filter
+            // ==========================================
+            // JWT FILTER
+            // ==========================================
+
             .addFilterBefore(
-                    jwtAuthenticationFilter,
-                    UsernamePasswordAuthenticationFilter.class
+                jwtAuthenticationFilter,
+                UsernamePasswordAuthenticationFilter.class
             );
 
         return http.build();

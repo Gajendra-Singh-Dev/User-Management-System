@@ -1,29 +1,65 @@
 package com.gajendra.dto;
 
+import java.time.LocalDateTime;
+
+import com.gajendra.entity.Role;
+
 public class UserResponse {
 
-    private final String token;
-    private final String tokenType;
-    private final String message;
+    private Long id;
+    private String name;
+    private String email;
+    private String mobile;
+    private Role role;
+    private Boolean active;
+    private LocalDateTime createdAt;
 
-    public UserResponse (String token, String tokenType, String message) {
-        this.token = token;
-        this.tokenType = tokenType;
-        this.message = message;
+    public UserResponse() {
     }
 
-    public String getToken() {
-        return token;
+    public UserResponse(
+            Long id,
+            String name,
+            String email,
+            String mobile,
+            Role role,
+            Boolean active,
+            LocalDateTime createdAt) {
+
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.mobile = mobile;
+        this.role = role;
+        this.active = active;
+        this.createdAt = createdAt;
     }
 
-    public String getTokenType() {
-        return tokenType;
+    public Long getId() {
+        return id;
     }
 
-    public String getMessage() {
-        return message;
+    public String getName() {
+        return name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 }
-
-
-

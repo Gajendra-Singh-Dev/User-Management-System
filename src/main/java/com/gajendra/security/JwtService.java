@@ -24,42 +24,41 @@ public class JwtService {
     private long jwtExpiration;
 
     // ==========================================
-    // Generate JWT Token
+    // GENERATE JWT TOKEN
     // ==========================================
 
     public String generateToken(User user) {
 
         return Jwts.builder()
 
-                // User email will become JWT subject
                 .subject(user.getEmail())
 
-                // User ID
-                .claim("userId", user.getId())
-
-                // User Role
-                .claim("role", user.getRole().name())
-
-                // Token created time
-                .issuedAt(new Date())
-
-                // Token expiry time
-                .expiration(
-                        new Date(
-                                System.currentTimeMillis()
-                                        + jwtExpiration
-                        )
+                .claim(
+                    "userId",
+                    user.getId()
                 )
 
-                // Sign token
+                .claim(
+                    "role",
+                    user.getRole().name()
+                )
+
+                .issuedAt(new Date())
+
+                .expiration(
+                    new Date(
+                        System.currentTimeMillis()
+                        + jwtExpiration
+                    )
+                )
+
                 .signWith(getSigningKey())
 
-                // Generate final token
                 .compact();
     }
 
     // ==========================================
-    // Extract Email from Token
+    // EXTRACT USERNAME / EMAIL
     // ==========================================
 
     public String extractUsername(String token) {
@@ -69,24 +68,26 @@ public class JwtService {
     }
 
     // ==========================================
-    // Check Token Valid
+    // VALIDATE TOKEN
     // ==========================================
 
     public boolean isTokenValid(
             String token,
             User user) {
 
-        String email = extractUsername(token);
+        String email =
+                extractUsername(token);
 
         return email.equals(user.getEmail())
                 && !isTokenExpired(token);
     }
 
     // ==========================================
-    // Check Token Expiry
+    // CHECK TOKEN EXPIRATION
     // ==========================================
 
-    private boolean isTokenExpired(String token) {
+    private boolean isTokenExpired(
+            String token) {
 
         return extractAllClaims(token)
                 .getExpiration()
@@ -94,10 +95,11 @@ public class JwtService {
     }
 
     // ==========================================
-    // Extract All Claims
+    // EXTRACT ALL CLAIMS
     // ==========================================
 
-    private Claims extractAllClaims(String token) {
+    private Claims extractAllClaims(
+            String token) {
 
         return Jwts.parser()
 
@@ -111,13 +113,15 @@ public class JwtService {
     }
 
     // ==========================================
-    // JWT Secret Key
+    // SECRET KEY
     // ==========================================
 
     private SecretKey getSigningKey() {
 
         byte[] keyBytes =
-                secretKey.getBytes(StandardCharsets.UTF_8);
+                secretKey.getBytes(
+                    StandardCharsets.UTF_8
+                );
 
         return Keys.hmacShaKeyFor(keyBytes);
     }

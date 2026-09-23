@@ -28,7 +28,7 @@ public class UserService {
         }
 
         Role role = user.getRole() == null
-                ? Role.USER
+                ? Role.STUDENT
                 : user.getRole();
 
         user.setRole(role);
