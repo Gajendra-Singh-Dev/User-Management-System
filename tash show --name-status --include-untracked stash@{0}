@@ -1,0 +1,77 @@
+D	src/main/java/com/application/demo/UserManagementSystemApplication.java
+D	src/main/java/com/application/demo/controller/AdmissionController.java
+D	src/main/java/com/application/demo/controller/AttendanceController.java
+D	src/main/java/com/application/demo/controller/BatchController.java
+D	src/main/java/com/application/demo/controller/EnquiryController.java
+D	src/main/java/com/application/demo/dto/BatchAttendanceSummary.java
+D	src/main/java/com/application/demo/entity/Admission.java
+D	src/main/java/com/application/demo/entity/Attendance.java
+D	src/main/java/com/application/demo/entity/Batch.java
+D	src/main/java/com/application/demo/entity/Course.java
+D	src/main/java/com/application/demo/entity/Enquiry.java
+D	src/main/java/com/application/demo/exception/GlobalExceptionHandler.java
+D	src/main/java/com/application/demo/repository/AdmissionRepository.java
+D	src/main/java/com/application/demo/repository/AttendanceRepository.java
+D	src/main/java/com/application/demo/repository/BatchRepository.java
+D	src/main/java/com/application/demo/repository/EnquiryRepository.java
+D	src/main/java/com/application/demo/service/AdmissionService.java
+D	src/main/java/com/application/demo/service/AttendanceService.java
+D	src/main/java/com/application/demo/service/BatchService.java
+D	src/main/java/com/application/demo/service/CourseService.java
+D	src/main/java/com/application/demo/service/EnquiryService.java
+D	src/main/java/com/application/demo/service/EnquiryServiceImpl.java
+M	src/main/java/com/gajendra/config/SecurityConfig.java
+M	src/main/java/com/gajendra/config/SecurityExceptionHandler.java
+A	src/main/java/com/gajendra/controller/AdmissionController.java
+A	src/main/java/com/gajendra/controller/AttendanceController.java
+R087	src/main/java/com/application/demo/controller/AttendanceReportController.java	src/main/java/com/gajendra/controller/AttendanceReportController.java
+A	src/main/java/com/gajendra/controller/AuditLogController.java
+A	src/main/java/com/gajendra/controller/BatchController.java
+R090	src/main/java/com/application/demo/controller/CourseController.java	src/main/java/com/gajendra/controller/CourseController.java
+M	src/main/java/com/gajendra/controller/DashboardController.java
+A	src/main/java/com/gajendra/controller/EnquiryController.java
+A	src/main/java/com/gajendra/controller/LoginActivityController.java
+R088	src/main/java/com/application/demo/controller/StudentController.java	src/main/java/com/gajendra/controller/StudentController.java
+M	src/main/java/com/gajendra/controller/UserController.java
+R095	src/main/java/com/application/demo/dto/AdmissionRequest.java	src/main/java/com/gajendra/dto/AdmissionRequest.java
+R091	src/main/java/com/application/demo/dto/AttendanceRequest.java	src/main/java/com/gajendra/dto/AttendanceRequest.java
+A	src/main/java/com/gajendra/dto/BatchAttendanceSummary.java
+A	src/main/java/com/gajendra/dto/ChangePasswordRequest.java
+A	src/main/java/com/gajendra/dto/ResetPasswordRequest.java
+R098	src/main/java/com/application/demo/dto/StudentAttendanceSummary.java	src/main/java/com/gajendra/dto/StudentAttendanceSummary.java
+A	src/main/java/com/gajendra/entity/Admission.java
+A	src/main/java/com/gajendra/entity/Attendance.java
+R058	src/main/java/com/application/demo/entity/AttendanceStatus.java	src/main/java/com/gajendra/entity/AttendanceStatus.java
+A	src/main/java/com/gajendra/entity/AuditLog.java
+A	src/main/java/com/gajendra/entity/Batch.java
+A	src/main/java/com/gajendra/entity/Course.java
+A	src/main/java/com/gajendra/entity/Enquiry.java
+R079	src/main/java/com/application/demo/entity/EnquirySource.java	src/main/java/com/gajendra/entity/EnquirySource.java
+R077	src/main/java/com/application/demo/entity/EnquiryStatus.java	src/main/java/com/gajendra/entity/EnquiryStatus.java
+A	src/main/java/com/gajendra/entity/LoginActivity.java
+A	src/main/java/com/gajendra/entity/Notification.java
+R098	src/main/java/com/application/demo/entity/Student.java	src/main/java/com/gajendra/entity/Student.java
+M	src/main/java/com/gajendra/entity/User.java
+R079	src/main/java/com/application/demo/exception/ResourceNotFoundException.java	src/main/java/com/gajendra/exception/ResourceNotFoundException.java
+A	src/main/java/com/gajendra/repository/AdmissionRepository.java
+A	src/main/java/com/gajendra/repository/AttendanceRepository.java
+A	src/main/java/com/gajendra/repository/AuditLogRepository.java
+A	src/main/java/com/gajendra/repository/BatchRepository.java
+R062	src/main/java/com/application/demo/repository/CourseRepository.java	src/main/java/com/gajendra/repository/CourseRepository.java
+A	src/main/java/com/gajendra/repository/EnquiryRepository.java
+A	src/main/java/com/gajendra/repository/LoginActivityRepository.java
+A	src/main/java/com/gajendra/repository/NotificationRepository.java
+R074	src/main/java/com/application/demo/repository/StudentRepository.java	src/main/java/com/gajendra/repository/StudentRepository.java
+A	src/main/java/com/gajendra/service/AdmissionService.java
+R058	src/main/java/com/application/demo/service/AttendanceReportService.java	src/main/java/com/gajendra/service/AttendanceReportService.java
+A	src/main/java/com/gajendra/service/AttendanceService.java
+A	src/main/java/com/gajendra/service/AuditLogService.java
+M	src/main/java/com/gajendra/service/AuthenticationService.java
+A	src/main/java/com/gajendra/service/BatchService.java
+A	src/main/java/com/gajendra/service/CourseService.java
+A	src/main/java/com/gajendra/service/EnquiryService.java
+A	src/main/java/com/gajendra/service/EnquiryServiceImpl.java
+A	src/main/java/com/gajendra/service/NotificationService.java
+R088	src/main/java/com/application/demo/service/ResourceNotFoundException.java	src/main/java/com/gajendra/service/ResourceNotFoundException.java
+R059	src/main/java/com/application/demo/service/StudentService.java	src/main/java/com/gajendra/service/StudentService.java
+M	src/main/java/com/gajendra/service/UserService.java

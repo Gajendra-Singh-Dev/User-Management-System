@@ -1,6 +1,7 @@
 package com.gajendra.config;
 
 import java.io.IOException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
@@ -12,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import tools.jackson.databind.ObjectMapper;
+
 
 @Component
 public class SecurityExceptionHandler

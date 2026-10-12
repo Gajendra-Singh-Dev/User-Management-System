@@ -150,6 +150,15 @@ public class SecurityConfig {
             		.hasRole("ADMIN")
             		
             		
+            		
+            		
+
+            	    // Login Activity
+            	    // ADMIN only
+            	    .requestMatchers("/api/login-activities/**")
+            	    .hasRole("ADMIN")
+            	    
+            	    
                 // Login/Register public
                 .requestMatchers(
                     "/api/auth/register",

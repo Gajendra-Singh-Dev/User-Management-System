@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.gajendra.dto.UserResponse;
 import com.gajendra.entity.User;
-
+import com.gajendra.service.AuditLogService;
 import com.gajendra.service.UserService;
 
 @RestController
@@ -24,14 +24,14 @@ import com.gajendra.service.UserService;
 public class UserController {
 
     private final UserService userService;
-
+    private final AuditLogService auditLogService;
 
     public UserController(
-            UserService userService
-           ) {
+            UserService userService,
+            AuditLogService auditLogService) {
 
         this.userService = userService;
-       
+        this.auditLogService = auditLogService;
     }
 
     // ==========================================
@@ -76,7 +76,12 @@ public class UserController {
         String adminEmail = authentication.getName();
 
         // Audit log create
-      
+        auditLogService.createLog(
+                adminEmail,
+                "CREATE",
+                "USER",
+                "New user created: " + savedUser.getEmail()
+        );
 
         return new ResponseEntity<>(
                 savedUser,
@@ -126,7 +131,12 @@ public class UserController {
         String adminEmail = authentication.getName();
 
         // Audit log create
-      
+        auditLogService.createLog(
+                adminEmail,
+                "UPDATE",
+                "USER",
+                "User updated: " + updatedUser.getEmail()
+        );
 
         return ResponseEntity.ok(updatedUser);
     }
@@ -146,7 +156,12 @@ public class UserController {
 
         String adminEmail = authentication.getName();
 
-     
+        auditLogService.createLog(
+                adminEmail,
+                "DISABLE",
+                "USER",
+                "User disabled: " + disabledUser.getEmail()
+        );
 
         return ResponseEntity.ok(disabledUser);
     }
@@ -166,7 +181,12 @@ public class UserController {
 
         String adminEmail = authentication.getName();
 
-      
+        auditLogService.createLog(
+                adminEmail,
+                "ACTIVATE",
+                "USER",
+                "User activated: " + activatedUser.getEmail()
+        );
 
         return ResponseEntity.ok(activatedUser);
     }
@@ -189,7 +209,12 @@ public class UserController {
 
         String adminEmail = authentication.getName();
 
-     
+        auditLogService.createLog(
+                adminEmail,
+                "DELETE",
+                "USER",
+                "User deleted: " + existingUser.getEmail()
+        );
 
         return ResponseEntity.ok(
                 "User deleted successfully");
