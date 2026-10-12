@@ -1,3 +1,4 @@
+
 package com.gajendra.service;
 
 import java.time.LocalDateTime;
@@ -8,9 +9,11 @@ import org.springframework.stereotype.Service;
 import com.gajendra.dto.AuthenticationResponse;
 import com.gajendra.dto.LoginRequest;
 import com.gajendra.dto.RegisterRequest;
+import com.gajendra.entity.LoginActivity;
 import com.gajendra.entity.Role;
 import com.gajendra.entity.User;
 import com.gajendra.exception.DuplicateResourceException;
+import com.gajendra.repository.LoginActivityRepository;
 import com.gajendra.repository.UserRepository;
 import com.gajendra.security.JwtService;
 
@@ -23,15 +26,28 @@ public class AuthenticationService {
 
     private final JwtService jwtService;
 
+    private final LoginActivityRepository loginActivityRepository;
+
+
     public AuthenticationService(
+
             UserRepository userRepository,
+
             PasswordEncoder passwordEncoder,
-            JwtService jwtService) {
+
+            JwtService jwtService,
+
+            LoginActivityRepository loginActivityRepository) {
 
         this.userRepository = userRepository;
+
         this.passwordEncoder = passwordEncoder;
+
         this.jwtService = jwtService;
+
+        this.loginActivityRepository = loginActivityRepository;
     }
+
 
     // ==========================================
     // REGISTER
@@ -49,6 +65,7 @@ public class AuthenticationService {
             );
         }
 
+
         // 2. Check password and confirm password
         if (!request.getPassword()
                 .equals(request.getConfirmPassword())) {
@@ -58,17 +75,22 @@ public class AuthenticationService {
             );
         }
 
+
         // 3. Create User object
         User user = new User();
+
 
         // 4. Set name
         user.setName(request.getName());
 
+
         // 5. Set email
         user.setEmail(request.getEmail());
 
+
         // 6. Set mobile
         user.setMobile(request.getMobile());
+
 
         // 7. Encrypt password
         user.setPassword(
@@ -77,24 +99,30 @@ public class AuthenticationService {
                 )
         );
 
+
         // 8. Default role
         user.setRole(Role.STUDENT);
 
+
         // 9. Active user
         user.setActive(true);
+
 
         // 10. Current date and time
         user.setCreatedAt(
                 LocalDateTime.now()
         );
 
+
         // 11. Save user
         User savedUser =
                 userRepository.save(user);
 
+
         // 12. Generate JWT Token
         String token =
                 jwtService.generateToken(savedUser);
+
 
         // 13. Return response
         return new AuthenticationResponse(
@@ -104,12 +132,14 @@ public class AuthenticationService {
         );
     }
 
+
     // ==========================================
     // LOGIN
     // ==========================================
 
     public AuthenticationResponse login(
             LoginRequest request) {
+
 
         // 1. Find user by email
         User user = userRepository
@@ -119,31 +149,90 @@ public class AuthenticationService {
                                 "Invalid email or password"
                         )
                 );
-        
+
+
+        // 2. Check account active
         if (Boolean.FALSE.equals(user.getActive())) {
-            throw new RuntimeException("User account is disabled");
+
+            // Login failed because account is disabled
+            LoginActivity failedActivity =
+                    new LoginActivity(
+                            user.getId(),
+                            LocalDateTime.now(),
+                            "FAILED"
+                    );
+
+            loginActivityRepository.save(
+                    failedActivity
+            );
+
+            throw new RuntimeException(
+                    "User account is disabled"
+            );
         }
 
-        // 2. Check password
+
+        // 3. Check password
         boolean passwordMatches =
                 passwordEncoder.matches(
                         request.getPassword(),
                         user.getPassword()
                 );
 
-        // 3. Wrong password
+
+        // 4. Wrong password
         if (!passwordMatches) {
+
+            // Save FAILED login activity
+            LoginActivity failedActivity =
+                    new LoginActivity(
+                            user.getId(),
+                            LocalDateTime.now(),
+                            "FAILED"
+                    );
+
+            loginActivityRepository.save(
+                    failedActivity
+            );
+
 
             throw new RuntimeException(
                     "Invalid email or password"
             );
         }
 
-        // 4. Generate JWT Token
+
+        // ==========================================
+        // SUCCESSFUL LOGIN
+        // ==========================================
+
+        // 5. Update last login date and time
+        user.setLastLoginDateTime(
+                LocalDateTime.now()
+        );
+
+        userRepository.save(user);
+
+
+        // 6. Save SUCCESS login activity
+        LoginActivity successActivity =
+                new LoginActivity(
+                        user.getId(),
+                        LocalDateTime.now(),
+                        "SUCCESS"
+                );
+
+        loginActivityRepository.save(
+                successActivity
+        );
+
+
+        // 7. Generate JWT Token
         String token =
                 jwtService.generateToken(user);
 
-        // 5. Return response
+
+        // 8. Return response
         return new AuthenticationResponse(
                 token,
                 "Bearer",
@@ -151,3 +240,4 @@ public class AuthenticationService {
         );
     }
 }
+

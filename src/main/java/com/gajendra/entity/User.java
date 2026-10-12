@@ -1,9 +1,7 @@
+
 package com.gajendra.entity;
 
 import java.time.LocalDateTime;
-
-
-import com.gajendra.entity.Role;
 
 import jakarta.persistence.*;
 
@@ -31,11 +29,20 @@ public class User {
 
     private LocalDateTime createdAt;
 
+    // ==============================
+    // Task 7 - Last Login Tracking
+    // ==============================
+    private LocalDateTime lastLoginDateTime;
+
+
     // Default Constructor
     public User() {
     }
 
+
+    // ==============================
     // Getters and Setters
+    // ==============================
 
     public Long getId() {
         return id;
@@ -100,4 +107,18 @@ public class User {
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
+
+
+    // ==============================
+    // Last Login Getter / Setter
+    // ==============================
+
+    public LocalDateTime getLastLoginDateTime() {
+        return lastLoginDateTime;
+    }
+
+    public void setLastLoginDateTime(LocalDateTime lastLoginDateTime) {
+        this.lastLoginDateTime = lastLoginDateTime;
+    }
 }
+
