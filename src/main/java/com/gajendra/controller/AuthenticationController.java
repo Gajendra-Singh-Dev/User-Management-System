@@ -11,14 +11,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
+import com.gajendra.service.PasswordResetService;
 import com.gajendra.dto.AuthenticationResponse;
 import com.gajendra.dto.LoginRequest;
 import com.gajendra.dto.RegisterRequest;
 import com.gajendra.entity.User;
 import com.gajendra.repository.UserRepository;
 import com.gajendra.service.AuthenticationService;
-
+import com.gajendra.dto.ForgotPasswordRequest;
+import com.gajendra.dto.VerifyOtpRequest;
+import com.gajendra.dto.ResetPasswordRequest;
 import jakarta.validation.Valid;
 
 @RestController
@@ -26,14 +28,17 @@ import jakarta.validation.Valid;
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
+    private final PasswordResetService passwordResetService;
     private final UserRepository userRepository;
 
     public AuthenticationController(
             AuthenticationService authenticationService,
+            PasswordResetService passwordResetService,
             UserRepository userRepository) {
 
         this.authenticationService = authenticationService;
         this.userRepository = userRepository;
+        this.passwordResetService = passwordResetService;
     }
 
     // ==========================================
@@ -91,4 +96,64 @@ public class AuthenticationController {
                 authenticationService.login(request)
         );
     }
+    
+    
+ // ==========================================
+ // POST - Forgot Password
+ // ==========================================
+
+ @PostMapping("/forgot-password")
+ public ResponseEntity<Map<String, String>> forgotPassword(
+         @Valid @RequestBody ForgotPasswordRequest request) {
+
+     passwordResetService.forgotPassword(request.getEmail());
+
+     Map<String, String> response = new LinkedHashMap<>();
+     response.put(
+         "message",
+         "If the email is registered, password reset instructions will be sent."
+     );
+
+     return ResponseEntity.ok(response);
+ }
+
+ // ==========================================
+ // POST - Verify OTP
+ // ==========================================
+
+ @PostMapping("/verify-otp")
+ public ResponseEntity<Map<String, String>> verifyOtp(
+         @Valid @RequestBody VerifyOtpRequest request) {
+
+     passwordResetService.verifyOtp(
+         request.getEmail(),
+         request.getOtp()
+     );
+
+     Map<String, String> response = new LinkedHashMap<>();
+     response.put("message", "OTP verified successfully.");
+
+     return ResponseEntity.ok(response);
+ }
+
+ // ==========================================
+ // POST - Reset Password
+ // ==========================================
+
+ @PostMapping("/reset-password")
+ public ResponseEntity<Map<String, String>> resetPassword(
+         @Valid @RequestBody ResetPasswordRequest request) {
+
+     passwordResetService.resetPassword(
+         request.getEmail(),
+         request.getOtp(),
+         request.getNewPassword(),
+         request.getConfirmPassword()
+     );
+
+     Map<String, String> response = new LinkedHashMap<>();
+     response.put("message", "Password reset successfully.");
+
+     return ResponseEntity.ok(response);
+ }
 }

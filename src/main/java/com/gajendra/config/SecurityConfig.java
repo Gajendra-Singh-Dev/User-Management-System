@@ -145,12 +145,13 @@ public class SecurityConfig {
 
             .authorizeHttpRequests(auth -> auth
 
-/////new new 1/10/26
+/////new new 1/10/26forgat email
             		.requestMatchers("/api/audit-logs/**")
             		.hasRole("ADMIN")
             		
             		
-            		
+            		////new
+            		.requestMatchers("/api/auth/**").permitAll()
             		
 
             	    // Login Activity
